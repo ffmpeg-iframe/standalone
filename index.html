@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<!--     <script src="coi-serviceworker.js"></script> -->
+    <meta http-equiv="origin-trial" content="ArqhkZuOovhQGpJ5LMTfRRj+af4pveLk92isaj4kEyXwp7yHmUXVMCTZWZPVOMJXVyMf7SipKgQzn2zRJBvGOQgAAABueyJvcmlnaW4iOiJodHRwczovL2ZmbXBlZy1pZnJhbWUuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTcwOTg1NTk5OX0=">
+    <script src="ffmpeg.js"></script>
+    <script>
+      const ffmpeg = new FFmpegWASM.FFmpeg();
+      function pass(ingoing) {
+        console.log(ingoing);
+        return ingoing;
+      }
+      onload = async () => {
+        const baseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt@0.12.4/dist/umd";
+        await ffmpeg.load({
+            coreURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.js`))).blob()),
+            wasmURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.wasm`))).blob()),
+            workerURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.worker.js`))).blob()),
+        });
+        ffmpeg.on("log", log => {console.log(log.message)});
+        window.addEventListener("message", async event => {
+          console.log("Message received!");
+          const data = event.data;
+          console.log(data);
+          window.playgroundData = data;
+          try {
+            await ffmpeg.createDir("/input");
+          } catch (e) {
+            console.error("The following happened while creating a directory: ", e);
+          }
+          console.log("Directory creation passed");
+          try {
+            await ffmpeg.mount('WORKERFS', {
+              files: [data.vid_data, data.aud_data]
+            }, "/input");
+          } catch (e) {
+            console.error("The following happened while mounting the files: ", e);
+          }
+          console.log("File mounting passed");
+          try {
+            await ffmpeg.exec(["-i", "/input/myvid." + data.vid_ext, "-i", "/input/myaud." + data.aud_ext, "-c", "copy", "output." + (data.vid_ext == data.aud_ext ? data.vid_ext : "mkv")]);
+          } catch (e) {
+            console.error("The following happened while running ffmpeg: ", e);
+          }
+          console.log("FFMPEG run passed");
+          console.log(await ffmpeg.listDir("./"));
+          let blobby = null;
+          try {
+            blobby = new Blob([await ffmpeg.readFile(pass("/output." + (data.vid_ext == data.aud_ext ? data.vid_ext : "mkv")))]);
+          } catch (e) {
+            console.error("Error occured while making blobby :(", e);
+          }
+          console.log("Blobby creation passsed");
+          (window.opener || window.parent).postMessage(blobby, "*");
+          console.log("Message sent!");
+          ffmpeg.unmount("/input");
+          ffmpeg.deleteDir("/input");
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>This window is used by the downloader for accessing restricted parts of the browser required for combining video and audio streams.  Please leave this open while using the YT downloader.</h1>
+  </body>
+</html>

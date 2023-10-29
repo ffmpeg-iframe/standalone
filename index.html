@@ -44,7 +44,9 @@
           console.log(await ffmpeg.listDir("./"));
           let blobby = null;
           try {
-            blobby = new Blob([await ffmpeg.readFile(pass("/output." + (data.vid_ext == data.aud_ext ? data.vid_ext : "mkv")))]);
+            const friend = await ffmpeg.readFile(pass("/output." + (data.vid_ext == data.aud_ext ? data.vid_ext : "mkv")));
+            console.log("Friend was compiled.");
+            blobby = new Blob([friend]);
           } catch (e) {
             console.error("Error occured while making blobby :(", e);
           }

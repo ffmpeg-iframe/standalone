@@ -2,7 +2,7 @@
   const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register("https://cdn.jsdelivr.net/gh/ffmpeg-iframe/standalone/renderhtml.js", {
+      const registration = await navigator.serviceWorker.register(URL.createObjectURL(await (await fetch("https://cdn.jsdelivr.net/gh/ffmpeg-iframe/standalone/renderhtml.js")).blob()), {
         scope: "https://cdn.jsdelivr.net/gh/ffmpeg-iframe/standalone/",
       });
       if (registration.installing) {

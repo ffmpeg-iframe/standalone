@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-<!--     <script src="coi-serviceworker.js"></script> -->
-    <meta http-equiv="origin-trial" content="ArqhkZuOovhQGpJ5LMTfRRj+af4pveLk92isaj4kEyXwp7yHmUXVMCTZWZPVOMJXVyMf7SipKgQzn2zRJBvGOQgAAABueyJvcmlnaW4iOiJodHRwczovL2ZmbXBlZy1pZnJhbWUuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTcwOTg1NTk5OX0=">
     <script src="ffmpeg.js"></script>
     <script>
       const ffmpeg = new FFmpegWASM.FFmpeg();
@@ -11,7 +9,7 @@
         return ingoing;
       }
       onload = async () => {
-        const baseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core-mt@0.12.4/dist/umd";
+        const baseURL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd";
         await ffmpeg.load({
             coreURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.js`))).blob()),
             wasmURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.wasm`))).blob()),

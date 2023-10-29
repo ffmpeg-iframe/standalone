@@ -13,7 +13,7 @@
         await ffmpeg.load({
             coreURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.js`))).blob()),
             wasmURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.wasm`))).blob()),
-            workerURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.worker.js`))).blob()),
+            // workerURL: URL.createObjectURL(await ( await fetch((`${baseURL}/ffmpeg-core.worker.js`))).blob()),
         });
         ffmpeg.on("log", log => {console.log(log.message)});
         window.addEventListener("message", async event => {
